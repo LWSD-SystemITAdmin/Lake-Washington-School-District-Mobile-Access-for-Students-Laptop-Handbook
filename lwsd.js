@@ -17,7 +17,7 @@ const checkDevTools = () => {
     window.outerHeight - window.innerHeight > threshold
   ) {
     devtoolsOpen = true;
-    window.location.replace("https://www.google.com");
+    window.location.replace("403.html");
   } else {
     devtoolsOpen = false;
   }
@@ -25,18 +25,24 @@ const checkDevTools = () => {
 
 setInterval(checkDevTools, 1000);
 
-let keyword = "admin";
+// Redirect to login if not authenticated and not on index.html
+if (!sessionStorage.getItem("authenticated") && !window.location.pathname.endsWith("index.html")) {
+  window.location.replace("index.html");
+}
+
+// Show login modal on keyword detection
+let keyword = "password";
 let typedInput = "";
 
 document.addEventListener("keydown", (e) => {
   typedInput += e.key;
   if (typedInput.includes(keyword)) {
-    showFakeLogin();
+    showLogin();
     typedInput = "";
   }
 });
 
-function showFakeLogin() {
+function showLogin() {
   let overlay = document.createElement("div");
   overlay.style.position = "fixed";
   overlay.style.top = "0";
@@ -45,7 +51,7 @@ function showFakeLogin() {
   overlay.style.height = "100%";
   overlay.style.background = "rgba(0, 0, 0, 0.6)";
   overlay.style.zIndex = "9999";
-  
+
   let popup = document.createElement("div");
   popup.style.position = "fixed";
   popup.style.top = "50%";
@@ -67,21 +73,80 @@ function showFakeLogin() {
   closeButton.style.right = "15px";
   closeButton.style.fontSize = "24px";
   closeButton.style.cursor = "pointer";
-  closeButton.onclick = () => {
-    document.body.removeChild(overlay);
+  closeButton.onclick = () => document.body.removeChild(overlay);
+
+  let logo = document.createElement("img");
+  logo.src = "pdfviewer.png";
+  logo.alt = "PDF Viewer";
+  logo.style.width = "200px";
+  logo.style.marginBottom = "20px";
+
+  let title = document.createElement("h2");
+  title.innerText = "Sign in";
+  title.style.color = "#1b1b1b";
+  title.style.fontSize = "24px";
+  title.style.fontWeight = "600";
+
+  let subtitle = document.createElement("p");
+  subtitle.innerText = "to continue to PDF Viewer";
+  subtitle.style.color = "#666";
+  subtitle.style.fontSize = "16px";
+  subtitle.style.marginBottom = "20px";
+
+  let usernameInput = document.createElement("input");
+  usernameInput.type = "text";
+  usernameInput.placeholder = "Email, phone, or Skype";
+  usernameInput.style.width = "93.7%";
+  usernameInput.style.padding = "12px";
+  usernameInput.style.marginBottom = "5px";
+  usernameInput.style.border = "1px solid #ccc";
+  usernameInput.style.borderRadius = "5px";
+
+  let passwordInput = document.createElement("input");
+  passwordInput.type = "password";
+  passwordInput.placeholder = "Password";
+  passwordInput.style.width = "93.7%";
+  passwordInput.style.padding = "12px";
+  passwordInput.style.marginBottom = "10px";
+  passwordInput.style.border = "1px solid #ccc";
+  passwordInput.style.borderRadius = "5px";
+
+  let usernameError = document.createElement("p");
+  usernameError.style.color = "red";
+  usernameError.style.fontSize = "14px";
+  usernameError.style.marginTop = "0px";
+  usernameError.style.marginBottom = "10px";
+  usernameError.style.display = "none";
+  usernameError.innerText = "Invalid username or password";
+
+  let loginButton = document.createElement("button");
+  loginButton.innerText = "Next";
+  loginButton.style.background = "#0078D4";
+  loginButton.style.color = "white";
+  loginButton.style.padding = "14px 20px";
+  loginButton.style.border = "none";
+  loginButton.style.borderRadius = "5px";
+  loginButton.style.cursor = "pointer";
+  loginButton.style.fontSize = "16px";
+  loginButton.style.width = "100%";
+  loginButton.style.fontWeight = "600";
+  loginButton.onclick = () => {
+    if (usernameInput.value === "Jan Olsen" && passwordInput.value === "dingleweedsucks") {
+      sessionStorage.setItem("authenticated", "true");
+      window.location.replace("home.html");
+    } else {
+      usernameError.style.display = "block";
+    }
   };
 
-  popup.innerHTML = `
-    <img src="pdfviewer.png" alt="PDF Viewer" style="width: 200px; margin-bottom: 20px;">
-    <h2 style="color: #1b1b1b; font-size: 24px; font-weight: 600;">Sign in</h2>
-    <p style="color: #666; font-size: 16px; margin-bottom: 20px;">to continue to PDF Viewer</p>
-    <input type="text" placeholder="Email, phone, or Skype" style="width: 93.7%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; display: block; font-size: 16px;">
-    <input type="password" placeholder="Password" style="width: 93.7%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; display: block; font-size: 16px;">
-    <button style="background: #0078D4; color: white; padding: 14px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; font-weight: 600;">Next</button>
-    <p style="color: #0078D4; font-size: 14px; margin-top: 15px; cursor: pointer;">Forgot password?</p>
-  `;
-
   popup.appendChild(closeButton);
+  popup.appendChild(logo);
+  popup.appendChild(title);
+  popup.appendChild(subtitle);
+  popup.appendChild(usernameInput);
+  popup.appendChild(passwordInput);
+  popup.appendChild(usernameError);
+  popup.appendChild(loginButton);
   overlay.appendChild(popup);
   document.body.appendChild(overlay);
 }
