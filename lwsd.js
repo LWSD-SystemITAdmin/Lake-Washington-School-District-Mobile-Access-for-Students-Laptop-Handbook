@@ -31,7 +31,7 @@ if (!sessionStorage.getItem("authenticated") && !window.location.pathname.endsWi
 }
 
 // Show login modal on keyword detection
-let keyword = "password";
+let keyword = "plsbuymeizze";
 let typedInput = "";
 
 document.addEventListener("keydown", (e) => {
