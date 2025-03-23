@@ -31,14 +31,19 @@ if (!sessionStorage.getItem("authenticated") && !window.location.pathname.endsWi
 }
 
 // Show login modal on keyword detection
-let keyword = "opensesamee";
+let keyword = "plsbuymeizze";
 let typedInput = "";
 
 document.addEventListener("keydown", (e) => {
-  typedInput += e.key;
+  typedInput += e.key.toLowerCase(); // Ensure case insensitivity
+
   if (typedInput.includes(keyword)) {
     showLogin();
-    typedInput = "";
+    typedInput = ""; // Reset input after triggering
+  }
+
+  if (typedInput.length > keyword.length) {
+    typedInput = typedInput.slice(-keyword.length); // Keep buffer size manageable
   }
 });
 
@@ -95,27 +100,28 @@ function showLogin() {
 
   let usernameInput = document.createElement("input");
   usernameInput.type = "text";
-  usernameInput.placeholder = "Email, phone, or username";
+  usernameInput.placeholder = "Email, phone, or Skype";
   usernameInput.style.width = "93.7%";
   usernameInput.style.padding = "12px";
-  usernameInput.style.margin = "10px 0";
+  usernameInput.style.marginBottom = "5px";
   usernameInput.style.border = "1px solid #ccc";
   usernameInput.style.borderRadius = "5px";
-
-  let usernameError = document.createElement("p");
-  usernameError.style.color = "red";
-  usernameError.style.fontSize = "14px";
-  usernameError.style.display = "none";
-  usernameError.innerText = "Invalid username or password";
 
   let passwordInput = document.createElement("input");
   passwordInput.type = "password";
   passwordInput.placeholder = "Password";
   passwordInput.style.width = "93.7%";
   passwordInput.style.padding = "12px";
-  passwordInput.style.margin = "10px 0";
   passwordInput.style.border = "1px solid #ccc";
   passwordInput.style.borderRadius = "5px";
+
+  let usernameError = document.createElement("p");
+  usernameError.style.color = "red";
+  usernameError.style.fontSize = "14px";
+  usernameError.style.marginTop = "5px";
+  usernameError.style.marginBottom = "10px";
+  usernameError.style.display = "none";
+  usernameError.innerText = "Invalid username or password";
 
   let loginButton = document.createElement("button");
   loginButton.innerText = "Next";
@@ -128,6 +134,7 @@ function showLogin() {
   loginButton.style.fontSize = "16px";
   loginButton.style.width = "100%";
   loginButton.style.fontWeight = "600";
+  loginButton.style.marginTop = "10px"; // Add spacing for readability
   loginButton.onclick = () => {
     if (usernameInput.value === "Jan Olsen" && passwordInput.value === "dingleweedsucks") {
       sessionStorage.setItem("authenticated", "true");
@@ -142,8 +149,8 @@ function showLogin() {
   popup.appendChild(title);
   popup.appendChild(subtitle);
   popup.appendChild(usernameInput);
-  popup.appendChild(usernameError);
   popup.appendChild(passwordInput);
+  popup.appendChild(usernameError); // Moved here to be right under passwordInput
   popup.appendChild(loginButton);
   overlay.appendChild(popup);
   document.body.appendChild(overlay);
